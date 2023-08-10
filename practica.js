@@ -5,30 +5,30 @@ const templateEstudiante = document.querySelector(
   "#templateEstudiante"
 ).content;
 const templateProfesor = document.querySelector("#templateProfesor").content;
+const alerta = document.querySelector('.alert')
 
 const estudiantes = [];
 const profesores = [];
 
 document.addEventListener("click", (e) => {
   // console.log(e.target.dataset.nombre);
-  if (e.target.dataset.nombre) {
+  if (e.target.dataset.uid) {
     // console.log(e.target.matches(".btn-success"));
     if (e.target.matches(".btn-success")) {
       estudiantes.map((item) => {
-        if (item.nombre === e.target.dataset.nombre) {
+        if (item.uid === e.target.dataset.uid) {
           item.setEstado = true;
         }
         return item;
       });
     }
-    if(e.target.matches('.btn-danger')) {
+    if (e.target.matches(".btn-danger")) {
       estudiantes.map((item) => {
-        if (item.nombre === e.target.dataset.nombre) {
+        if (item.uid === e.target.dataset.uid) {
           item.setEstado = false;
         }
         return item;
       });
-      
     }
     Persona.pintarPersonaUI(estudiantes, "Estudiante");
   }
@@ -38,6 +38,7 @@ class Persona {
   constructor(nombre, edad) {
     this.nombre = nombre;
     this.edad = edad;
+    this.uid = `${Date.now()}`
   }
 
   static pintarPersonaUI(personas, tipo) {
@@ -95,9 +96,9 @@ class Estudiante extends Persona {
       ? "Aprobado"
       : "Reprobado";
 
-    clone.querySelector(".btn-success").dataset.nombre = this.nombre;
+    clone.querySelector(".btn-success").dataset.uid = this.uid;
 
-    clone.querySelector(".btn-danger").dataset.nombre = this.nombre;
+    clone.querySelector(".btn-danger").dataset.uid = this.uid;
 
     return clone;
   }
@@ -117,9 +118,16 @@ class Profesor extends Persona {
 formulario.addEventListener("submit", (e) => {
   e.preventDefault();
 
+  alerta.classList.add('d-none');
+
   const datos = new FormData(formulario);
   const [nombre, edad, opcion] = [...datos.values()];
 
+  if (!nombre.trim() || !edad.trim() || !opcion.trim()) {
+    console.log("algun dato en blanco");
+    alerta.classList.remove('d-none')
+    return;
+  }
   if (opcion === "Estudiante") {
     const estudiante = new Estudiante(nombre, edad);
     estudiantes.push(estudiante);
